@@ -5,30 +5,32 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PR9_ThunderstormBird"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="MainWindow" Height="450" Width="850"
 		xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+		xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
 		d:DesignHeight="450"
-		d:DesignWidth="800"
+		d:DesignWidth="850"
 		Background="DimGray"
 		ExtendsContentIntoTitleBar="True"
-		WindowBackdropType="Mica"
+		WindowBackdropType="Tabbed"
 		WindowCornerPreference="Round"
+		
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<Storyboard x:Key="myAnimation">
-			<DoubleAnimation Storyboard.TargetName="myColumn" Storyboard.TargetProperty="Width" From="0" To="200" Duration="0:0:1"/>
+			<DoubleAnimation Storyboard.TargetName="myColumn" Storyboard.TargetProperty="Padding" From="-200" To="0" Duration="0:2:20"/>
 		</Storyboard>
 	</Window.Resources>
-	<Grid>
+	<Grid x:Name="Root">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="40"/>
+			<RowDefinition x:Name="titlerow" Height="40"/>
 			<RowDefinition Height="6*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition x:Name="myColumn" Width="2*"/>
+			<ColumnDefinition x:Name="Left" Width="191"/>
 			<ColumnDefinition Width="5*"/>
-			<ColumnDefinition Width="2*" MinWidth="215"/>
+			<ColumnDefinition x:Name="Right" Width="0"/>
 		</Grid.ColumnDefinitions>
 		<i:Interaction.Triggers>
 			<i:EventTrigger EventName="Loaded">
@@ -50,43 +52,63 @@
 				</ui:NotifyIcon>
 			</ui:TitleBar.Tray>
 		</ui:TitleBar>
-
-		<Grid x:Name="ListGrid" Grid.Row="1" Grid.RowSpan="2">
-
-			<StackPanel Orientation="Horizontal" VerticalAlignment="Top" Height="45">
-				<Label Content="New Messages" FontSize="16" Margin="5,0,0,0" FontFamily="Century Gothic"/>
-			</StackPanel>
-
-			<ListBox x:Name="MessagesLbx" Margin="5,30,5,5" SelectionChanged="MessagesLbx_SelectionChanged">
+	
+		
+		
+		<Grid x:Name="ListGrid" Grid.Row="1" Grid.Column="0">
+			
+			<ListBox x:Name="MessagesLbx" Margin="5,0,5,5"   SelectionChanged="MessagesLbx_SelectionChanged" ItemsSource="{Binding msg}">
 				<ListBox.ItemsPanel>
 					<ItemsPanelTemplate>
-						<StackPanel Orientation="Vertical" />
+						<StackPanel Orientation="Vertical" ></StackPanel>
 					</ItemsPanelTemplate>
 				</ListBox.ItemsPanel>
 				<ListBox.ItemTemplate>
 					<DataTemplate>
-						<TextBlock Text="{Binding}" Margin="0" TextWrapping="Wrap" />
+						<TextBlock Text="{Binding}" Margin="0"/>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
+
 		</Grid>
 
 		<Grid Grid.Row="1" Grid.Column="1">
-			<Label x:Name="SenderLbl" Content="Message" FontSize="16" Margin="5,0,0,0" FontFamily="Century Gothic"/>
-			<RichTextBox x:Name="MailOpened" VerticalAlignment="Stretch" Margin="5,30,5,5"/>
+			
+			<Label Content="afsffsa" x:Name="MailOpenedSender" Margin="5,0,5,5" VerticalAlignment="Top"/>
+			<Label Content="afsffsa" x:Name="MailOpenedSubject" Margin="5,20,5,5" VerticalAlignment="Top"/>
+			<RichTextBox IsReadOnly="True" BorderThickness="0" x:Name="MailOpened" VerticalAlignment="Stretch" Margin="5,40,5,5">
+			</RichTextBox>
+			<Border Panel.ZIndex="-1" Opacity="0.5" Margin="5,40,5,5" BorderBrush="Transparent" BorderThickness="5" CornerRadius="10">
+				<WebBrowser Visibility="Hidden" Opacity="0.5" x:Name="webview" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
+			</Border>
+
+			<ui:Snackbar x:Name="msgerrors" Timeout="10000" Icon="ErrorCircle24" Appearance="Primary"  CloseButtonEnabled="False" Margin="15,15,15,15" HorizontalAlignment="Stretch" Opacity="1"/>
+
+
+
 		</Grid>
 
-		<Grid Grid.Row="0" Grid.ColumnSpan="2">
-			<Label x:Name="AppLabel" Content="ThunderstormBird" Panel.ZIndex="1" Width="155" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="18" FontWeight="Light" FontFamily="Century Gothic" Margin="10,10,5,5"/>
+		<Grid Grid.Row="0" Grid.ColumnSpan="3">
+			<Label x:Name="AppLabel" HorizontalContentAlignment="Center" Content="ThunderstormBird" Panel.ZIndex="1" Width="155" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" FontWeight="Light" FontFamily="Century Gothic" Margin="7,10,5,6"/>
 			<WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="40">
-				<ProgressBar Name="Progress" Width="160" Height="30" Background="Transparent" Foreground="Green" Value="0" HorizontalAlignment="Left" Margin="5,5,0,5"/>
-				
+				<ProgressBar BorderThickness="0" Name="Progress" Width="160" Height="32" Background="Transparent" Value="0" HorizontalAlignment="Left" Margin="5,4,0,5"/>
+				<ui:Card Height="30" Margin="-160,0,0,0" Width="160"/>
 				<ui:Button x:Name="Update" VerticalAlignment="Center" Margin="5,5,0,5" Content="Update" Icon="ArrowDownload48" Click="Update_Click"/>
-				<ui:TextBox Width="70" FontSize="16" Text="40" Height="40" VerticalAlignment="Top" BorderThickness="0" Margin="5,0,0,5" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
-				<ui:Button Name="List" VerticalAlignment="Center" Margin="5,5,0,5" Content="List" Icon="List20"/>
+				<ui:TextBox Width="70" FontSize="18" Text="40" Height="40" VerticalAlignment="Top" BorderThickness="1" Margin="5,5,0,5" Padding="0,0,0,4" HorizontalContentAlignment="Center" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
+				<ToggleButton Name="ListTgb" IsChecked="True" VerticalAlignment="Center" Margin="5,5,0,5" Content="List" Click="ListTgb_Click"/>
+				<ToggleButton Name="WriteTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Write" Click="WriteTgb_Click"/>
+				<ToggleButton Name="FoldersTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Folders" Click="FoldersTgb_Click"/>
+				<ToggleButton Name="ThemeTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Theme" Click="ThemeTgb_Click"/>
 				<ui:Button x:Name="Exit" VerticalAlignment="Center" Margin="5,5,0,5" Content="Exit" Appearance="Danger" Icon="ArrowExit20" />
-				
+
 			</WrapPanel>
+			<ListBox x:Name="FoldersLbx" Grid.ColumnSpan="3" Height="45" Margin="5,40,5,5" ScrollViewer.VerticalScrollBarVisibility="Hidden"	 ScrollViewer.HorizontalScrollBarVisibility="Hidden" VerticalAlignment="Top" SelectionChanged="FoldersLbx_SelectionChanged">
+				<ListBox.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Orientation="Horizontal" ></StackPanel>
+					</ItemsPanelTemplate>
+				</ListBox.ItemsPanel>
+			</ListBox>
 		</Grid>
 		<GridSplitter Grid.RowSpan="2" Grid.Row="1" Width="1" Background="DimGray" Margin="0,5,0,5"/>
 		<GridSplitter Grid.RowSpan="2" Grid.Column="1" Grid.Row="1" Width="1" Background="DimGray" Margin="0,5,0,5"/>
@@ -101,7 +123,6 @@
 			<ui:TextBox x:Name="ThemeTxb" PlaceholderText="Theme" Margin="5,75,5,5" VerticalAlignment="Top"/>
 			<ui:TextBox x:Name="SendTxb" PlaceholderText="Send To" Margin="5,35,5,5" VerticalAlignment="Top"/>
 		</Grid>
-
 
 	</Grid>
 </ui:UiWindow>
