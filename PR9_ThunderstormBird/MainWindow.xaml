@@ -83,9 +83,6 @@
 			</Border>
 
 			<ui:Snackbar x:Name="msgerrors" Timeout="10000" Icon="ErrorCircle24" Appearance="Primary"  CloseButtonEnabled="False" Margin="15,15,15,15" HorizontalAlignment="Stretch" Opacity="1"/>
-
-
-
 		</Grid>
 
 		<Grid Grid.Row="0" Grid.ColumnSpan="3">

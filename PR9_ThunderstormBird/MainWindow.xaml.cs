@@ -37,11 +37,7 @@ namespace PR9_ThunderstormBird
 	/// </summary>
 	public partial class MainWindow : UiWindow
 	{
-		public static string myemailaddress = "f71251@gmail.com";
-		public static string mypassword = "tlkpihvlhaioagci";
-		public static string serveraddress = "gmail.com";
-		public static int smtpport = 993;
-		public static int imapport = 465;
+		
 
 		private readonly Regex _regex = new Regex("[^0-9\\.]+");
 		private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -59,8 +55,6 @@ namespace PR9_ThunderstormBird
 		private async void MessagesLbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var cts = new CancellationTokenSource();
-			
-
 			if (MessagesLbx.SelectedIndex > -1)
 			{
 				webview.Visibility = Visibility.Visible;
@@ -84,20 +78,6 @@ namespace PR9_ThunderstormBird
 				File.WriteAllText("sample.html", html.Replace("<body", "<body style=\"background-color: black;\">"));
 
 				webview.NavigateToString(html);
-
-				return;
-
-				SautinSoft.HtmlToRtf h = new SautinSoft.HtmlToRtf();
-				string inputFile = @"sample.html";
-				// You want to save in RTF.
-				string outputFile = @"result.rtf";
-				h.OpenHtml(inputFile);
-				h.ToRtf(outputFile);
-				MailOpened.Document.Blocks.Clear();
-				FileStream filesStream = new FileStream("result.rtf", FileMode.Open);
-				TextRange range = new TextRange(MailOpened.Document.ContentStart, MailOpened.Document.ContentEnd);
-				range.Load(filesStream, System.Windows.DataFormats.Rtf);
-				filesStream.Close();
 
 				return;
 
@@ -211,8 +191,8 @@ namespace PR9_ThunderstormBird
 			
 			using (var client = new ImapClient())
 			{
-				await client.ConnectAsync("imap.gmail.com", 993, true);
-				await client.AuthenticateAsync(myemailaddress, mypassword);
+				await client.ConnectAsync("imap.gmail.com", User.smtpport, true);
+				await client.AuthenticateAsync(User.Address, User.Password);
 
 				IMailFolder inbox;
 
@@ -231,7 +211,8 @@ namespace PR9_ThunderstormBird
 				}
 				catch
 				{
-					msgerrors.Show("Troubles with opening this folder");
+					webview.Visibility = Visibility.Hidden;
+					msgerrors.Show("Troubles with opening this folder", foldername);
 					return;
 				}
 
@@ -243,7 +224,6 @@ namespace PR9_ThunderstormBird
 
 				List<string> msg = new List<string>();
 				msg.Clear();
-				message.messageslist.Clear();
 				Progress.Maximum = Convert.ToInt32(MsgAmount.Text);
 				Progress.Value = 0;
 
@@ -323,7 +303,7 @@ namespace PR9_ThunderstormBird
 						
 						PR9_ThunderstormBird.message.messageslist.Add(new message(subject, secondPart, firstPart, date, htmlBody, textBody));
 						msg.Add(message.Subject + "\n" + firstPart + "\n" + secondPart + "\n" + dateString);
-						if ((Convert.ToInt32(MsgAmount.Text) - inbox.Count + i)%50 == 0)
+						if ((Convert.ToInt32(MsgAmount.Text) - inbox.Count + i)%10 == 0)
 						{
 							MessagesLbx.ItemsSource= null;
 							MessagesLbx.ItemsSource= msg;
@@ -341,16 +321,17 @@ namespace PR9_ThunderstormBird
 				MessagesLbx.ItemsSource= msg;
 				if (Convert.ToInt32(MsgAmount.Text) != MessagesLbx.Items.Count)
 				{
+					webview.Visibility = Visibility.Hidden;
 					msgerrors.Show((Convert.ToInt32(MsgAmount.Text) - MessagesLbx.Items.Count - 1).ToString() + " Messages are not loaded", $"There are some errors - {(Convert.ToInt32(MsgAmount.Text) - MessagesLbx.Items.Count)} of {MsgAmount.Text} messages are not loaded");
 
 
 				}
 				else
 				{
+					webview.Visibility = Visibility.Hidden;
 					msgerrors.Show("Success\n", $"All {MsgAmount.Text} messages are loaded");
 
 				}
-				System.Windows.MessageBox.Show($"{msg.Count} {message.messageslist.Count}");
 				client.Disconnect(true);
 
 				
@@ -365,7 +346,7 @@ namespace PR9_ThunderstormBird
 
 			
 			var message = new MimeMessage();
-			message.From.Add(new MailboxAddress(myemailaddress, myemailaddress));
+			message.From.Add(new MailboxAddress(User.Address, User.Address));
 			message.To.Add(new MailboxAddress(SendTxb.Text, SendTxb.Text));
 			message.Subject = ThemeTxb.Text;
 			message.Body = new TextPart("plain")
@@ -377,9 +358,9 @@ namespace PR9_ThunderstormBird
 			{
 				using (var client = new MailKit.Net.Smtp.SmtpClient())
 				{
-					await client.ConnectAsync("smtp.gmail.com", 465, true);
+					await client.ConnectAsync("smtp.gmail.com", User.imapport, true);
 
-					client.Authenticate(myemailaddress, mypassword);
+					client.Authenticate(User.Address, User.Password);
 
 					client.Send(message);
 					client.Disconnect(true);
@@ -513,17 +494,23 @@ namespace PR9_ThunderstormBird
 
 		private void ThemeTgb_Click(object sender, RoutedEventArgs e)
 		{
-			
-			if (ThemeTgb.IsChecked == true)
+			try
 			{
-				Theme.Apply(ThemeType.Light, BackgroundType.Tabbed, true, true);
-				MailOpened.Foreground = Brushes.Black;
+				if (ThemeTgb.IsChecked == true)
+				{
+					Theme.Apply(ThemeType.Light, BackgroundType.Unknown, true, true);
+					MailOpened.Foreground = Brushes.Black;
 
+				}
+				if (ThemeTgb.IsChecked == false)
+				{
+					Theme.Apply(ThemeType.Dark, BackgroundType.Unknown, true, true);
+					MailOpened.Foreground = Brushes.White;
+				}
 			}
-			if (ThemeTgb.IsChecked == false)
+			catch (Exception емае)
 			{
-				Theme.Apply(ThemeType.Dark, BackgroundType.Tabbed, true, true);
-				MailOpened.Foreground = Brushes.White;
+
 			}
 		}
 
@@ -561,8 +548,11 @@ namespace PR9_ThunderstormBird
 		}
 	}
 
-	public class SmtpClient
+	public static class User
 	{
+		public static string Address, Password = "";
+		public static int imapport = 0;
+		public static int smtpport = 0;
 
 	}
 }

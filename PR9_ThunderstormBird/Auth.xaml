@@ -5,10 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PR9_ThunderstormBird"
         mc:Ignorable="d"
-        Title="Auth" Height="250" Width="300"
+        Title="Auth" Height="300" Width="300"
 		xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-		d:DesignHeight="250"
+		d:DesignHeight="300"
 		d:DesignWidth="300"
 		Background="DimGray"
 		ExtendsContentIntoTitleBar="True"
@@ -20,9 +20,28 @@
 			<DoubleAnimation Storyboard.TargetName="myColumn" Storyboard.TargetProperty="Width" From="0" To="200" Duration="0:0:1"/>
 		</Storyboard>
 	</Window.Resources>
-	<Grid Margin="15,15,15,15" HorizontalAlignment="Stretch">
-		<WrapPanel Width="240" HorizontalAlignment="Stretch">
-			<ui:TextBox/>
-		</WrapPanel>
+	<Grid HorizontalAlignment="Stretch">
+		<ui:TitleBar/>
+		<StackPanel Margin="5,50,5,5" >
+			
+			<Label FontSize="32" HorizontalContentAlignment="Center" Content="ThunderstormBird"/>
+			<Grid Margin="5,5,5,5">
+				
+				<ui:TextBox x:Name="MailTbx" Text="" HorizontalAlignment="Stretch" Margin="0,0,105,0" PlaceholderText="Mail"/>
+				<ComboBox x:Name="MailCbx" HorizontalAlignment="Right" MaxWidth="100" Height="36"  SelectedIndex="0" Padding="10,8,10,8">
+					<ComboBoxItem>
+						<TextBlock Text="Gmail" Tag="gmail.com"/>
+					</ComboBoxItem>
+					<ComboBoxItem>
+						<TextBlock Text="Rambler" Tag="rambler.ru"/>
+					</ComboBoxItem>
+					<ComboBoxItem>
+						<TextBlock Text="Yandex" Tag="Yandex.ru"/>
+					</ComboBoxItem>
+				</ComboBox>
+			</Grid>
+			<ui:TextBox x:Name="PasswordTbx" Text="" HorizontalAlignment="Stretch" Margin="5,5,5,5" PlaceholderText="Password"/>
+			<ui:Button x:Name="Authorization" Click="Authorization_Click" Height="40" FontSize="16" Content="    Authorization    " Margin="5,5,5,5" HorizontalAlignment="Center"/>
+		</StackPanel>
 	</Grid>
 </ui:UiWindow>
