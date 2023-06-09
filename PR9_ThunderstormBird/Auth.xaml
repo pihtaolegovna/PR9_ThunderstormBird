@@ -11,6 +11,7 @@
 		d:DesignHeight="300"
 		d:DesignWidth="300"
 		Background="DimGray"
+
 		ExtendsContentIntoTitleBar="True"
 		WindowBackdropType="Mica"
 		WindowCornerPreference="Round"

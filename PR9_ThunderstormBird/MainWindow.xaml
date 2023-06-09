@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PR9_ThunderstormBird"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="850"
+        Title="ThunderstormBird" Height="450" Width="850"
 		xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
 		xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
 		xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
@@ -15,7 +15,6 @@
 		ExtendsContentIntoTitleBar="True"
 		WindowBackdropType="Tabbed"
 		WindowCornerPreference="Round"
-		
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
 		<Storyboard x:Key="myAnimation">
@@ -28,17 +27,17 @@
 			<RowDefinition Height="6*"/>
 		</Grid.RowDefinitions>
 		<Grid.ColumnDefinitions>
-			<ColumnDefinition x:Name="Left" Width="191"/>
-			<ColumnDefinition Width="5*"/>
-			<ColumnDefinition x:Name="Right" Width="0"/>
+			<ColumnDefinition x:Name="Left" Width="2*"/>
+			<ColumnDefinition Width="4*"/>
+			<ColumnDefinition x:Name="Right" Width="3*"/>
 		</Grid.ColumnDefinitions>
+		
 		<i:Interaction.Triggers>
 			<i:EventTrigger EventName="Loaded">
 				<i:InvokeCommandAction Command="{Binding myAnimation}" />
 			</i:EventTrigger>
 		</i:Interaction.Triggers>
 	
-
 		<ui:TitleBar
 			Height="30"
 			Grid.ColumnSpan="3">
@@ -52,11 +51,10 @@
 				</ui:NotifyIcon>
 			</ui:TitleBar.Tray>
 		</ui:TitleBar>
-	
-		
-		
+
+
+
 		<Grid x:Name="ListGrid" Grid.Row="1" Grid.Column="0">
-			
 			<ListBox x:Name="MessagesLbx" Margin="5,0,5,5"   SelectionChanged="MessagesLbx_SelectionChanged" ItemsSource="{Binding msg}">
 				<ListBox.ItemsPanel>
 					<ItemsPanelTemplate>
@@ -73,13 +71,13 @@
 		</Grid>
 
 		<Grid Grid.Row="1" Grid.Column="1">
+			<Label x:Name="MailOpenedSender" Margin="5,0,5,5" VerticalAlignment="Top"/>
+			<Label x:Name="MailOpenedSubject" Margin="5,20,5,5" VerticalAlignment="Top"/>
 			
-			<Label Content="afsffsa" x:Name="MailOpenedSender" Margin="5,0,5,5" VerticalAlignment="Top"/>
-			<Label Content="afsffsa" x:Name="MailOpenedSubject" Margin="5,20,5,5" VerticalAlignment="Top"/>
 			<RichTextBox IsReadOnly="True" BorderThickness="0" x:Name="MailOpened" VerticalAlignment="Stretch" Margin="5,40,5,5">
 			</RichTextBox>
-			<Border Panel.ZIndex="-1" Opacity="0.5" Margin="5,40,5,5" BorderBrush="Transparent" BorderThickness="5" CornerRadius="10">
-				<WebBrowser Visibility="Hidden" Opacity="0.5" x:Name="webview" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
+			<Border Opacity="0.5" Margin="5,40,5,5" BorderBrush="Transparent" BorderThickness="5" CornerRadius="10">
+				<WebBrowser Opacity="0.5" x:Name="webview" ScrollViewer.VerticalScrollBarVisibility="Hidden" ScrollViewer.HorizontalScrollBarVisibility="Hidden"/>
 			</Border>
 
 			<ui:Snackbar x:Name="msgerrors" Timeout="10000" Icon="ErrorCircle24" Appearance="Primary"  CloseButtonEnabled="False" Margin="15,15,15,15" HorizontalAlignment="Stretch" Opacity="1"/>
@@ -91,12 +89,13 @@
 				<ProgressBar BorderThickness="0" Name="Progress" Width="160" Height="32" Background="Transparent" Value="0" HorizontalAlignment="Left" Margin="5,4,0,5"/>
 				<ui:Card Height="30" Margin="-160,0,0,0" Width="160"/>
 				<ui:Button x:Name="Update" VerticalAlignment="Center" Margin="5,5,0,5" Content="Update" Icon="ArrowDownload48" Click="Update_Click"/>
-				<ui:TextBox Width="70" FontSize="18" Text="40" Height="40" VerticalAlignment="Top" BorderThickness="1" Margin="5,5,0,5" Padding="0,0,0,4" HorizontalContentAlignment="Center" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
+				<TextBox Width="50" FontSize="14" Text="4" Height="40" VerticalAlignment="Top" BorderThickness="1" Margin="5,5,0,5" Padding="0,5,0,5" HorizontalContentAlignment="Center" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
 				<ToggleButton Name="ListTgb" IsChecked="True" VerticalAlignment="Center" Margin="5,5,0,5" Content="List" Click="ListTgb_Click"/>
 				<ToggleButton Name="WriteTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Write" Click="WriteTgb_Click"/>
 				<ToggleButton Name="FoldersTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Folders" Click="FoldersTgb_Click"/>
 				<ToggleButton Name="ThemeTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Theme" Click="ThemeTgb_Click"/>
-				<ui:Button x:Name="Exit" VerticalAlignment="Center" Margin="5,5,0,5" Content="Exit" Appearance="Danger" Icon="ArrowExit20" />
+				<ui:Button Name="SwitchTgb" VerticalAlignment="Center" Margin="5,5,0,5" Content="View" Click="SwitchTgb_Click"/>
+				<ui:Button x:Name="Exit" VerticalAlignment="Center" Margin="5,5,0,5" Content="Exit" Appearance="Danger" Icon="ArrowExit20" Click="Exit_Click" />
 
 			</WrapPanel>
 			<ListBox x:Name="FoldersLbx" Grid.ColumnSpan="3" Height="45" Margin="5,40,5,5" ScrollViewer.VerticalScrollBarVisibility="Hidden"	 ScrollViewer.HorizontalScrollBarVisibility="Hidden" VerticalAlignment="Top" SelectionChanged="FoldersLbx_SelectionChanged">
@@ -107,18 +106,22 @@
 				</ListBox.ItemsPanel>
 			</ListBox>
 		</Grid>
-		<GridSplitter Grid.RowSpan="2" Grid.Row="1" Width="1" Background="DimGray" Margin="0,5,0,5"/>
-		<GridSplitter Grid.RowSpan="2" Grid.Column="1" Grid.Row="1" Width="1" Background="DimGray" Margin="0,5,0,5"/>
 		<Grid Grid.Row="1" Grid.Column="2" Grid.RowSpan="2">
-			<WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
-				<ui:Button VerticalAlignment="Center" Margin="5,0,0,5" Icon="TextItalic24"  HorizontalContentAlignment="Left"/>
-				<ui:Button VerticalAlignment="Center" Margin="5,0,0,5" Icon="TextBold24"/>
-				<ui:Button VerticalAlignment="Center" Margin="5,0,0,5" Icon="TextUnderline24"/>
-				<ui:Button x:Name="SendBtn" VerticalAlignment="Center" Margin="5,0,0,5" Content="Send" Icon="Send24" Appearance="Info" Click="SendBtn_Click"/>
+			<WrapPanel HorizontalAlignment="Stretch" VerticalAlignment="Top" Width="300">
+				<ui:Button IsEnabled="False" x:Name="SendBtn" VerticalAlignment="Center" Margin="5,0,0,5" Content="Send" Icon="Send24" Appearance="Info" Click="SendBtn_Click"/>
+				<ui:Button IsEnabled="False" x:Name="ForwardBtn" Content="Forward" Icon="ArrowForward16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0,0,5" Click="Forward_Click" Appearance="Info"/>
+				<ui:Button IsEnabled="False"  x:Name="ReplyBtn" Content="Reply" Icon="ArrowReply24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0,0,5" Click="Reply_Click" Appearance="Info" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave"/>
 			</WrapPanel>
-			<RichTextBox x:Name="MessageTxb" Margin="5,115,5,5" VerticalAlignment="Stretch"/>
-			<ui:TextBox x:Name="ThemeTxb" PlaceholderText="Theme" Margin="5,75,5,5" VerticalAlignment="Top"/>
-			<ui:TextBox x:Name="SendTxb" PlaceholderText="Send To" Margin="5,35,5,5" VerticalAlignment="Top"/>
+			<WrapPanel VerticalAlignment="Top" Margin="0,116,0,0" HorizontalAlignment="Left" >
+				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="B" Click="BoldBtn_Click" HorizontalContentAlignment="Left"/>
+				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="I" Click="ItalicBtn_Click"/>
+				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="U" Click="UnderlineBtn_Click"/>
+				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="S" Click="StrikethroughBtn_Click"/>
+				<ui:Button Content="Clear" Icon="TextClearFormatting16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0,0,5" Click="Clear_Click" Appearance="Secondary"/>
+			</WrapPanel>
+			<RichTextBox x:Name="MessageTxb" Margin="5,155,5,5" VerticalAlignment="Stretch"/>
+			<ui:TextBox x:Name="ThemeTxb" PlaceholderText="Theme" Margin="5,75,5,5" VerticalAlignment="Top" TextChanged="ThemeTxb_TextChanged"/>
+			<ui:TextBox x:Name="SendTxb" PlaceholderText="Send To" Margin="5,35,5,5" VerticalAlignment="Top" TextChanged="SendTxb_TextChanged"/>
 		</Grid>
 
 	</Grid>

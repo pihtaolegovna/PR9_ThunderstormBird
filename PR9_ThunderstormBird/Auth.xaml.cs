@@ -34,12 +34,15 @@ namespace PR9_ThunderstormBird
 			{
 				case 0:
 					User.Address = MailTbx.Text + "@gmail.com";
+					User.server = "gmail";
 					break;
 				case 1:
 					User.Address = MailTbx.Text + "@rambler.ru";
+					User.server = "rambler";
 					break;
 				case 2:
 					User.Address = MailTbx.Text + "@yandex.ru";
+					User.server = "yandex";
 					break;
 
 
@@ -49,22 +52,36 @@ namespace PR9_ThunderstormBird
 
 			User.Password = PasswordTbx.Text;
 
-			MainWindow secondWindow = new MainWindow();
+			
+
+			
 
 			try
 			{
 				using (var client = new ImapClient())
 				{
-					await client.ConnectAsync("imap.gmail.com", User.smtpport, true);
+					await client.ConnectAsync($"imap.{User.server}.com", User.smtpport, true);
 					await client.AuthenticateAsync(User.Address, User.Password);
+					await client.DisconnectAsync(true);
 				}
-				secondWindow.Show();
+				new MainWindow().Show();
 				this.Close();
 			}
-			catch
+			catch (System.Net.Sockets.SocketException)
 			{
 				Authorization.IsEnabled = true;
-				MessageBox.Show("Ошибка авторизации");
+
+				Wpf.Ui.Controls.MessageBox mbx = new Wpf.Ui.Controls.MessageBox();
+
+				mbx.Show("Ошибка авторизации", "Нет подключения к интернету");
+			}
+			catch (MailKit.Security.AuthenticationException)
+			{
+				Authorization.IsEnabled = true;
+
+				Wpf.Ui.Controls.MessageBox mbx = new Wpf.Ui.Controls.MessageBox();
+
+				mbx.Show("Ошибка авторизации", "Указан неверный логин или пароль");
 			}
 
 		}
