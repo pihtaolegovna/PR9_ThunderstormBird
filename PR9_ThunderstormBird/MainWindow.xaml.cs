@@ -35,6 +35,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Linq;
 using ImapX;
 using System.Net;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace PR9_ThunderstormBird
 {
@@ -56,13 +57,13 @@ namespace PR9_ThunderstormBird
 			LoadMailAsync(false, null);
 		}
 
-
 		private async void MessagesLbx_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var cts = new CancellationTokenSource();
 			if (MessagesLbx.SelectedIndex > -1)
 			{
-				webview.Visibility = Visibility.Visible;
+				webview.NavigateToString(message.messageslist[MessagesLbx.SelectedIndex].HtmlBody);
+
 				string dateString = message.messageslist[MessagesLbx.SelectedIndex].Date.ToString();
 				try
 				{
@@ -78,12 +79,11 @@ namespace PR9_ThunderstormBird
 				MailOpenedSubject.Content = message.messageslist[MessagesLbx.SelectedIndex].Subject;
 				string html = message.messageslist[MessagesLbx.SelectedIndex].HtmlBody;
 
-				//string dateString = message.messageslist[MessagesLbx.SelectedIndex].Date.ToString();
 				try
 				{
 					DateTime dateTime = DateTime.ParseExact(dateString, "dd.MM.yyyy HH:mm:ss zzz", CultureInfo.InvariantCulture);
 
-					int latestPart = 30; // Replace with the latest part value
+					int latestPart = 30;
 					TimeSpan latestTime = TimeSpan.FromMinutes(latestPart);
 					dateTime = dateTime.Add(latestTime);
 					dateString = dateTime.ToString();
@@ -93,91 +93,44 @@ namespace PR9_ThunderstormBird
 				MailOpenedSender.Content = message.messageslist[MessagesLbx.SelectedIndex].From + " " + dateString;
 				MailOpenedSubject.Content = message.messageslist[MessagesLbx.SelectedIndex].Subject;
 
-				MailOpened.Document.Blocks.Clear();
-				MailOpened.Document.Blocks.Add(new Paragraph(new Run(message.messageslist[MessagesLbx.SelectedIndex].TextBody)));
-				
-				return;
-
 				try
 				{
-					//string html = message.messageslist[MessagesLbx.SelectedIndex].HtmlBody;
-					await Task.Run(() =>
+					Task.Run(() =>
 					{
-						cts.Token.ThrowIfCancellationRequested();
-						try
+						Application.Current.Dispatcher.Invoke(() =>
 						{
-							
-							
-							
-						}
-						catch { 
-							cts.Cancel();
-						}
-						
-					});
-					
+							var selectedMessage = message.messageslist[MessagesLbx.SelectedIndex];
+							var htmlFilePath = "msg.html";
+							var rtfFilePath = "msg.rtf";
+							MailOpened.Document.Blocks.Clear();
+							MailOpened.Document.Blocks.Add(new Paragraph(new Run("Loading 10%")));
 
-					Application.Current.Dispatcher.Invoke(() =>
-					{
+							// Asynchronously write HTML content to file on separate thread
+							var writeHtmlTask = Task.Run(() => File.WriteAllText(htmlFilePath, selectedMessage.HtmlBody));
 
-						Task.Run(() => {
-							Application.Current.Dispatcher.Invoke(() =>
+							// Asynchronously convert HTML to RTF using the Syncfusion Document Library
+							var d = new Document(htmlFilePath, FileFormat.Html);
+							d.SaveToFile(rtfFilePath, FileFormat.Rtf);
+							d.Close();
+							MailOpened.Document.Blocks.Clear();
+							MailOpened.Document.Blocks.Add(new Paragraph(new Run("Loading 50%")));
+							MailOpened.Document.Blocks.Clear();
+							MailOpened.Document.Blocks.Add(new Paragraph(new Run("Loading 80%")));
+							using (var fileStream = new FileStream(rtfFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, true))
 							{
-								
+								var textRange = new TextRange(MailOpened.Document.ContentStart, MailOpened.Document.ContentEnd);
+								textRange.Load(fileStream, System.Windows.DataFormats.Rtf);
+							}
 
-								using (FileStream fileStream = new FileStream("result.rtf", FileMode.Open))
-								{
-									MailOpened.Document.Blocks.Clear();
-									MailOpened.Document.Blocks.Add(new Paragraph(new Run("Loading 50%")));
-									TextRange textRange = new TextRange(MailOpened.Document.ContentStart, MailOpened.Document.ContentEnd);
-									MailOpened.Document.Blocks.Clear();
-									MailOpened.Document.Blocks.Add(new Paragraph(new Run("Loading 80%")));
-
-									try
-									{
-										MailOpened.Document.Blocks.Clear();
-										textRange.Load(fileStream, System.Windows.DataFormats.Rtf);
-									}
-									catch (Exception ащибка)
-									{
-										System.Windows.MessageBox.Show(ащибка.Message + ащибка.InnerException + ащибка.Data);
-									}
-
-									System.Windows.MessageBox.Show("Loaded");
-
-								}
-								
-							});
-
+							var deleteHtmlTask = Task.Run(() => File.Delete(htmlFilePath));
+							var deleteRtfTask = Task.Run(() => File.Delete(rtfFilePath));
 						});
-						Task.Delay(300).ContinueWith(task => {
-							Application.Current.Dispatcher.Invoke(() =>
-							{
-								File.Delete("msg.html");
-								File.Delete("msg.rtf");
-							});
-
-						});
-						
 					});
 				}
-				catch (Exception expt)
+				catch (Exception er)
 				{
-					System.Windows.MessageBox.Show(expt.Message + expt.Source + expt.InnerException + expt.Data);
 					MailOpened.Document.Blocks.Clear();
-					MailOpened.Document.Blocks.Add(new Paragraph(new Run("There are nothing")));
-					try
-					{
-						MailOpened.Document.Blocks.Clear();
-						MailOpened.Document.Blocks.Add(new Paragraph(new Run(message.messageslist[MessagesLbx.SelectedIndex].TextBody)));
-					}
-					catch (Exception exce)
-					{
-						System.Windows.MessageBox.Show(exce.Message + exce.Source + exce.InnerException + exce.Data);
-						MailOpened.Document.Blocks.Clear();
-						MailOpened.Document.Blocks.Add(new Paragraph(new Run("There are nothing")));
-					}
-
+					MailOpened.Document.Blocks.Add(new Paragraph(new Run(message.messageslist[MessagesLbx.SelectedIndex].TextBody)));
 				}
 			}
 		}
@@ -218,6 +171,7 @@ namespace PR9_ThunderstormBird
 					List<string> msg = new List<string>();
 					message.messageslist.Clear();
 					msg.Clear();
+					MailOpenedSender.Content = inbox.Count.ToString() + " Messages";
 					Progress.Maximum = Convert.ToInt32(MsgAmount.Text);
 					Progress.Value = 0;
 					for (int i = inbox.Count; i > inbox.Count - Convert.ToInt32(MsgAmount.Text) - 1; i--)
@@ -323,8 +277,9 @@ namespace PR9_ThunderstormBird
 			User.imapport = 0;
 			User.smtpport = 0;
 			User.server = "";
-			this.Close();
 			new Auth().Show();
+			this.Close();
+			
 		}
 		private void BoldText()
 		{
@@ -476,7 +431,7 @@ namespace PR9_ThunderstormBird
 				ColumnDefinition col = Root.ColumnDefinitions[2]; // Replace 0 with the index of the column you want to animate
 				GridLengthAnimation anim = new GridLengthAnimation();
 				anim.From = new GridLength(0, GridUnitType.Pixel);
-				anim.To = new GridLength(2.4, GridUnitType.Pixel);
+				anim.To = new GridLength(2.9, GridUnitType.Pixel);
 				anim.Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200));
 				col.BeginAnimation(ColumnDefinition.WidthProperty, anim);
 
@@ -617,7 +572,7 @@ namespace PR9_ThunderstormBird
 		}
 		private void SwitchTgb_Click(object sender, RoutedEventArgs e)
 		{
-			if (webview.Visibility == Visibility.Hidden) webview.Visibility = Visibility.Hidden; else webview.Visibility = Visibility.Visible;
+			if (!(webview.Visibility == Visibility.Hidden)) webview.Visibility = Visibility.Hidden; else webview.Visibility = Visibility.Visible;
 		}
 		private void ThemeTxb_TextChanged(object sender, TextChangedEventArgs e)
 		{

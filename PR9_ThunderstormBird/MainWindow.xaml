@@ -11,9 +11,11 @@
 		xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
 		d:DesignHeight="450"
 		d:DesignWidth="850"
+		MinHeight="450"
+		MinWidth="850"
 		Background="DimGray"
 		ExtendsContentIntoTitleBar="True"
-		WindowBackdropType="Tabbed"
+		WindowBackdropType="Acrylic"
 		WindowCornerPreference="Round"
 		WindowStartupLocation="CenterScreen">
 	<Window.Resources>
@@ -29,7 +31,7 @@
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition x:Name="Left" Width="2*"/>
 			<ColumnDefinition Width="4*"/>
-			<ColumnDefinition x:Name="Right" Width="3*"/>
+			<ColumnDefinition x:Name="Right" Width="0"/>
 		</Grid.ColumnDefinitions>
 		
 		<i:Interaction.Triggers>
@@ -73,7 +75,7 @@
 		<Grid Grid.Row="1" Grid.Column="1">
 			<Label x:Name="MailOpenedSender" Margin="5,0,5,5" VerticalAlignment="Top"/>
 			<Label x:Name="MailOpenedSubject" Margin="5,20,5,5" VerticalAlignment="Top"/>
-			
+
 			<RichTextBox IsReadOnly="True" BorderThickness="0" x:Name="MailOpened" VerticalAlignment="Stretch" Margin="5,40,5,5">
 			</RichTextBox>
 			<Border Opacity="0.5" Margin="5,40,5,5" BorderBrush="Transparent" BorderThickness="5" CornerRadius="10">
@@ -89,7 +91,7 @@
 				<ProgressBar BorderThickness="0" Name="Progress" Width="160" Height="32" Background="Transparent" Value="0" HorizontalAlignment="Left" Margin="5,4,0,5"/>
 				<ui:Card Height="30" Margin="-160,0,0,0" Width="160"/>
 				<ui:Button x:Name="Update" VerticalAlignment="Center" Margin="5,5,0,5" Content="Update" Icon="ArrowDownload48" Click="Update_Click"/>
-				<TextBox Width="50" FontSize="14" Text="4" Height="40" VerticalAlignment="Top" BorderThickness="1" Margin="5,5,0,5" Padding="0,5,0,5" HorizontalContentAlignment="Center" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
+				<TextBox Width="50" FontSize="14" Text="40" Height="40" VerticalAlignment="Top" BorderThickness="1" Margin="5,5,0,5" Padding="0,5,0,5" HorizontalContentAlignment="Center" Background="Transparent" PreviewTextInput="TextBox_PreviewTextInput" x:Name="MsgAmount"/>
 				<ToggleButton Name="ListTgb" IsChecked="True" VerticalAlignment="Center" Margin="5,5,0,5" Content="List" Click="ListTgb_Click"/>
 				<ToggleButton Name="WriteTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Write" Click="WriteTgb_Click"/>
 				<ToggleButton Name="FoldersTgb" IsChecked="False" VerticalAlignment="Center" Margin="5,5,0,5" Content="Folders" Click="FoldersTgb_Click"/>
@@ -113,10 +115,10 @@
 				<ui:Button IsEnabled="False"  x:Name="ReplyBtn" Content="Reply" Icon="ArrowReply24" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0,0,5" Click="Reply_Click" Appearance="Info" MouseEnter="Button_MouseEnter" MouseLeave="Button_MouseLeave"/>
 			</WrapPanel>
 			<WrapPanel VerticalAlignment="Top" Margin="0,116,0,0" HorizontalAlignment="Left" >
-				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="B" Click="BoldBtn_Click" HorizontalContentAlignment="Left"/>
-				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="I" Click="ItalicBtn_Click"/>
-				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="U" Click="UnderlineBtn_Click"/>
-				<ToggleButton VerticalAlignment="Center" Margin="5,0,0,5" Content="S" Click="StrikethroughBtn_Click"/>
+				<Button VerticalAlignment="Center" Margin="5,0,0,5" Content="B" Click="BoldBtn_Click" HorizontalContentAlignment="Left"/>
+				<Button VerticalAlignment="Center" Margin="5,0,0,5" Content="I" Click="ItalicBtn_Click"/>
+				<Button VerticalAlignment="Center" Margin="5,0,0,5" Content="U" Click="UnderlineBtn_Click"/>
+				<Button VerticalAlignment="Center" Margin="5,0,0,5" Content="S" Click="StrikethroughBtn_Click"/>
 				<ui:Button Content="Clear" Icon="TextClearFormatting16" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="5,0,0,5" Click="Clear_Click" Appearance="Secondary"/>
 			</WrapPanel>
 			<RichTextBox x:Name="MessageTxb" Margin="5,155,5,5" VerticalAlignment="Stretch"/>

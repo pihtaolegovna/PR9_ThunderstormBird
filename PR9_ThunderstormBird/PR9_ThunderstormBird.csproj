@@ -155,7 +155,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Class1.cs" />
+    <Compile Include="UserMail.cs" />
     <Compile Include="smtp.cs" />
     <Page Include="Auth.xaml">
       <SubType>Designer</SubType>
@@ -173,7 +173,6 @@
       <DependentUpon>Auth.xaml</DependentUpon>
     </Compile>
     <Compile Include="imap.cs" />
-    <Compile Include="Mail.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
